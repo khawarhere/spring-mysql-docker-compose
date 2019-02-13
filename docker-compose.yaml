@@ -1,0 +1,34 @@
+version: "3"
+services:
+    kmysql:
+        image: mysql:5.7.22
+        ports:
+            - 3306:3306
+        environment:
+            MYSQL_DATABASE: kdbname
+            MYSQL_USER: kdbuser
+            MYSQL_PASSWORD: kdbpass
+            MYSQL_ROOT_PASSWORD: kdbpassroot
+        volumes:
+         - db_data:/var/lib/mysql
+    kmyadmin:
+        image: phpmyadmin/phpmyadmin
+        links:
+            - kmysql:db
+        ports:
+            - 83:80
+        environment:
+            MYSQL_USER: kdbuser
+            MYSQL_PASSWORD: kdbpass
+            MYSQL_ROOT_PASSWORD: kdbpassroot
+    kapp:
+        build: .
+        ports:
+            - 8080:8080
+        environment:
+            DB_HOST: kmysql:3306
+            DB_USER: kdbuser
+            DB_PASSWORD: kdbpass
+            DB_NAME: kdbname
+volumes:
+    db_data: {}
